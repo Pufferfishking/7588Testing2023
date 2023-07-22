@@ -3,9 +3,11 @@ package org.firstinspires.ftc.teamcode.commandBased.subsystems;
 import com.ThermalEquilibrium.homeostasis.Controllers.Feedback.AngleController;
 import com.ThermalEquilibrium.homeostasis.Parameters.PIDCoefficientsEx;
 import com.acmerobotics.dashboard.config.Config;
-import org.firstinspires.ftc.teamcode.commandBased.classes.Pose2d;
 
-import com.acmerobotics.roadrunner.drive.MecanumDrive;
+import org.firstinspires.ftc.teamcode.commandBased.classes.apriltag.AprilTagLocalizer;
+import org.firstinspires.ftc.teamcode.commandBased.classes.TwoWheelLocalizer;
+import org.firstinspires.ftc.teamcode.commandBased.classes.util.geometry.Pose2d;
+
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.qualcomm.hardware.lynx.LynxModule;
@@ -18,11 +20,12 @@ import com.qualcomm.robotcore.hardware.IMU;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.commandBased.classes.enums.DriveMode;
 import org.firstinspires.ftc.teamcode.commandBased.classes.pid.DeadzonePID;
-import org.firstinspires.ftc.teamcode.commandBased.classes.Drive;
+import org.firstinspires.ftc.teamcode.commandBased.classes.misc.Drive;
 import org.firstinspires.ftc.teamcode.commandBased.classes.pid.PIDOpenClosed;
-import org.firstinspires.ftc.teamcode.commandBased.classes.Vector2d;
+import org.firstinspires.ftc.teamcode.commandBased.classes.util.geometry.Vector2d;
 import org.firstinspires.ftc.teamcode.commandBased.Constants;
-import org.firstinspires.ftc.teamcode.rr.drive.TwoWheelTrackingLocalizer;
+
+import static org.firstinspires.ftc.teamcode.commandBased.Constants.*;
 
 @Config
 public class DrivetrainSubsystem extends SubsystemBase {
@@ -48,7 +51,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
     private PIDOpenClosed turnPID;
     private double turningPIDDeadzone = 0.25;
 
-    private TwoWheelTrackingLocalizer localizer;
+    private TwoWheelLocalizer dwLocalizer;
+    private AprilTagLocalizer atLocalizer;
     private com.acmerobotics.roadrunner.geometry.Pose2d pose = new com.acmerobotics.roadrunner.geometry.Pose2d(0, 0, 0);
 
     private final Drive drive;
@@ -96,16 +100,50 @@ public class DrivetrainSubsystem extends SubsystemBase {
                 RevHubOrientationOnRobot.LogoFacingDirection.FORWARD, RevHubOrientationOnRobot.UsbFacingDirection.UP));
         imu.initialize(parameters);
 
-//        localizer = new TwoWheelTrackingLocalizer(hwMap, this);
-//        localizer.setPoseEstimate(Constants.STARTING_POINT);
+        dwLocalizer = new TwoWheelLocalizer(
+                this,
+                hwMap,
+                new Pose2d(PARALLEL_X, PARALLEL_Y, 0),
+                new Pose2d(PERPENDICULAR_X, PERPENDICULAR_Y, Math.toRadians(90)),
+                PARALLEL_ENCODER,
+                PERPENDICULAR_ENCODER
+        );
+
+//        atLocalizer = new AprilTagLocalizer(
+//                this,
+//                hwMap,
+//                CAMERA_POSE,
+//                CAMERA_1,
+//                C920_INTRINSICS
+//        );
     }
 
+    @Override
     public void periodic() {
         heading = getRawExternalHeading();
-//        localizer.update();
-//        pose = localizer.getPoseEstimate();
+        //atLocalizer.update();
     }
 
+
+//    public Pose3d getTagPose() {
+//        return atLocalizer.getTagPose();
+//    }
+//
+//    public Transform3d getCamToTarget() {
+//        return atLocalizer.getCamToTarget();
+//    }
+//
+//    public Pose3d getCameraPose() {
+//        return atLocalizer.getCameraPose();
+//    }
+//
+//    public AprilTagDetection getTargetTag() {
+//        return atLocalizer.getTargetTag();
+//    }
+//
+//    public VisionPortal.CameraState getCameraState() {
+//        return atLocalizer.getCameraState();
+//    }
 
     public void setSpeedMultipliers(double strafeMultiplier, double forwardMultiplier, double turnMultiplier) {
         this.strafeMultiplier = strafeMultiplier;

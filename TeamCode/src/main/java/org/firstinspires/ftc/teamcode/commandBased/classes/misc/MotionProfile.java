@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.commandBased.classes;
+package org.firstinspires.ftc.teamcode.commandBased.classes.misc;
 
 import com.arcrobotics.ftclib.hardware.motors.Motor;
 

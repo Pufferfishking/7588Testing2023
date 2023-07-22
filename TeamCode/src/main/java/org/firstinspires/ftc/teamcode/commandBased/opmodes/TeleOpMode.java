@@ -17,10 +17,11 @@ public class TeleOpMode extends BaseOpMode {
 
     @Override
     public void initialize() {
-        drivetrainSS = new DrivetrainSubsystem(hardwareMap);
         packet = new TelemetryPacket();
         fieldOverlay = packet.fieldOverlay();
         super.initialize();
+
+        drivetrainSS = new DrivetrainSubsystem(hardwareMap);
 
         tele.addLine("Ready to start:");
         tele.update();

@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.commandBased.classes;
+package org.firstinspires.ftc.teamcode.commandBased.classes.misc;
 
 public class LowPassFilter {
 

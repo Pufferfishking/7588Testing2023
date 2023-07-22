@@ -103,11 +103,11 @@ public class ArmSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        setArmPos();
-        motionProfiling();
-        calculateKF();
-        armPower();
-        PIDF();
+//        setArmPos();
+//        motionProfiling();
+//        calculateKF();
+//        armPower();
+//        PIDF();
     }
 
     private void motionProfiling() {

@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.commandBased.classes.util;
+package org.firstinspires.ftc.teamcode.commandBased.classes;
 
 import androidx.annotation.NonNull;
 import com.arcrobotics.ftclib.command.button.Button;

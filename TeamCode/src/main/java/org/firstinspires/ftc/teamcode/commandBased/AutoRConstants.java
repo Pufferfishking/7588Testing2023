@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.commandBased;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 
-import org.firstinspires.ftc.teamcode.commandBased.classes.Pose2dSpline;
+import org.firstinspires.ftc.teamcode.commandBased.classes.util.geometry.Pose2dSpline;
 
 @Config
 public class AutoRConstants {

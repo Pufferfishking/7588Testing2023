@@ -1,7 +1,4 @@
-package org.firstinspires.ftc.teamcode.commandBased.classes;
-
-import com.arcrobotics.ftclib.command.Command;
-import com.arcrobotics.ftclib.command.CommandScheduler;
+package org.firstinspires.ftc.teamcode.commandBased.classes.misc;
 
 import org.firstinspires.ftc.teamcode.commandBased.classes.triggers.TriggerCommand;
 

@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.commandBased.classes.triggers;
 import com.arcrobotics.ftclib.command.Command;
 import com.arcrobotics.ftclib.command.CommandBase;
 
-import org.firstinspires.ftc.teamcode.commandBased.classes.CommandSchedulerEx;
+import org.firstinspires.ftc.teamcode.commandBased.classes.misc.CommandSchedulerEx;
 
 import java.util.Arrays;
 import java.util.Collection;

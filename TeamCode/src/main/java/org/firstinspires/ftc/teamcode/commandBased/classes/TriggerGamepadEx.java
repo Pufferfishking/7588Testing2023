@@ -1,11 +1,9 @@
-package org.firstinspires.ftc.teamcode.commandBased.classes.util;
+package org.firstinspires.ftc.teamcode.commandBased.classes;
 
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.arcrobotics.ftclib.gamepad.TriggerReader;
 import com.qualcomm.robotcore.hardware.Gamepad;
-
-import org.firstinspires.ftc.teamcode.commandBased.classes.util.GamepadTrigger;
 
 import java.util.HashMap;
 

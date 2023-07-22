@@ -1,10 +1,7 @@
 package org.firstinspires.ftc.teamcode.commandBased.opmodes;
 
 import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.canvas.Canvas;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
-import com.arcrobotics.ftclib.command.Command;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.button.GamepadButton;
@@ -15,20 +12,14 @@ import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.teamcode.commandBased.Constants;
-import org.firstinspires.ftc.teamcode.commandBased.classes.CommandSchedulerEx;
+import org.firstinspires.ftc.teamcode.commandBased.classes.misc.CommandSchedulerEx;
 import org.firstinspires.ftc.teamcode.commandBased.classes.triggers.TriggerCommand;
-import org.firstinspires.ftc.teamcode.commandBased.classes.util.GamepadTrigger;
-import org.firstinspires.ftc.teamcode.commandBased.classes.util.TriggerGamepadEx;
+import org.firstinspires.ftc.teamcode.commandBased.classes.GamepadTrigger;
+import org.firstinspires.ftc.teamcode.commandBased.classes.TriggerGamepadEx;
 import org.firstinspires.ftc.teamcode.commandBased.subsystems.ArmSubsystem;
-import org.firstinspires.ftc.teamcode.commandBased.subsystems.AutoDrivetrainSubsystem;
-import org.firstinspires.ftc.teamcode.commandBased.subsystems.DrivetrainSubsystem;
 import org.firstinspires.ftc.teamcode.commandBased.subsystems.ElevatorSubsystem;
 import org.firstinspires.ftc.teamcode.commandBased.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.commandBased.subsystems.RotatorSubsystem;
-import org.firstinspires.ftc.teamcode.rr.util.DashboardUtil;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class BaseOpMode extends CommandOpMode {
 
@@ -47,6 +38,8 @@ public class BaseOpMode extends CommandOpMode {
     protected RevBlinkinLedDriver blinkin;
 
     private VoltageSensor batteryVoltageSensor;
+
+    private double loopTime;
 
     @Override
     public void initialize() {
@@ -74,6 +67,9 @@ public class BaseOpMode extends CommandOpMode {
     public void run() {
         CommandScheduler.getInstance().run();
         CommandSchedulerEx.getInstance().run();
+
+        tad("loop time", System.currentTimeMillis() - loopTime);
+        loopTime = System.currentTimeMillis();
 
         if (Constants.DEBUG_ELE) {
             tad("ele pos", elevatorSS.getElePos());
@@ -132,6 +128,12 @@ public class BaseOpMode extends CommandOpMode {
         return batteryVoltageSensor.getVoltage();
     }
 
+    protected void tal() {
+        tele.addLine();
+    }
+    protected void tal(String caption) {
+        tele.addLine(caption);
+    }
     protected void tad(String caption, Object value) {
         tele.addData(caption, value);
     }

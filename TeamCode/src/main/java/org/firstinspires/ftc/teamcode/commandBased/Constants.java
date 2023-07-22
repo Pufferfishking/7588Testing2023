@@ -8,22 +8,37 @@ import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.qualcomm.robotcore.hardware.PwmControl;
 
-import org.firstinspires.ftc.teamcode.commandBased.classes.Vector2d;
+import org.firstinspires.ftc.teamcode.commandBased.classes.apriltag.CameraIntrinsics;
+import org.firstinspires.ftc.teamcode.commandBased.classes.util.geometry.Pose3d;
+import org.firstinspires.ftc.teamcode.commandBased.classes.util.geometry.Rotation3d;
+import org.firstinspires.ftc.teamcode.commandBased.classes.util.geometry.Vector2d;
+import org.firstinspires.ftc.teamcode.commandBased.classes.util.geometry.Vector3d;
 
 @SuppressWarnings("SpellCheckingInspection")
 @Config
 public class Constants {
 
     //debug toggles
-    public static boolean DEBUG_DRIVE = false;
+    public static boolean DEBUG_DRIVE = true;
     public static boolean DEBUG_ELE = false;
-    public static boolean DEBUG_ARM = true;
+    public static boolean DEBUG_ARM = false;
     public static boolean DEBUG_ROTATOR = false;
-    public static boolean DEBUG_INTAKE = true;
+    public static boolean DEBUG_INTAKE = false;
     public static boolean DEBUG_COMMANDS = false;
 
     //display toggle
     public static boolean DISPLAY = true;
+
+    //config
+    public static String FRONT_LEFT_DRIVE = "fL";
+    public static String FRONT_RIGHT_DRIVE = "fR";
+    public static String REAR_LEFT_DRIVE = "rL";
+    public static String REAR_RIGHT_DRIVE = "rR";
+
+    public static String PARALLEL_ENCODER = "paraEncoder";
+    public static String PERPENDICULAR_ENCODER = FRONT_LEFT_DRIVE;
+
+    public static String CAMERA_1 = "Webcam 1";
 
     //control layers
     public static GamepadKeys.Trigger CONTROL_LAYER_2 = GamepadKeys.Trigger.LEFT_TRIGGER;
@@ -140,4 +155,31 @@ public class Constants {
     //AUTO
     public static double STACK_INCREMENT = .5;
 
+
+    //VISION
+    public static CameraIntrinsics C920_INTRINSICS = new CameraIntrinsics(810.073, 810.073, 214.359, 243.298);
+    public static double FX1 = 810.073;
+    public static double FY1 = 810.073;
+    public static double CX1 = 214.359;
+    public static double CY1 = 243.298;
+
+    public static Pose3d CAMERA_POSE = new Pose3d(
+            new Vector3d(-5, 5, 5),
+            new Rotation3d(0, -40, 0)
+    );
+
+
+    //LOCALIZER
+    public static double TICKS_PER_REV = 8192;
+    public static double WHEEL_RADIUS = 0.7480315; // in
+    public static double GEAR_RATIO = 1; // output (wheel) speed / input (encoder) speed
+
+    public static double PARALLEL_X = 1.37795; // X is the up and down direction
+    public static double PARALLEL_Y = -5.029438; // Y is the strafe direction
+
+    public static double PERPENDICULAR_X = 1.39764;
+    public static double PERPENDICULAR_Y = 5.24311;
+
+    public static double X_MULTIPLIER = 0.9785592237633322; // Multiplier in the X direction
+    public static double Y_MULTIPLIER = 0.9863013698630137; // Multiplier in the Y direction
 }

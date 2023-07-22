@@ -20,6 +20,7 @@ import static org.firstinspires.ftc.teamcode.commandBased.Constants.ANGLE_OFFSET
 import static org.firstinspires.ftc.teamcode.commandBased.Constants.ARM_ANGLE_BACK;
 import static org.firstinspires.ftc.teamcode.commandBased.Constants.ARM_ANGLE_FRONT;
 import static org.firstinspires.ftc.teamcode.commandBased.Constants.ARM_ANGLE_IDLE;
+import static org.firstinspires.ftc.teamcode.commandBased.Constants.DEBUG_DRIVE;
 import static org.firstinspires.ftc.teamcode.commandBased.Constants.DRIVE_FAST_FORWARD;
 import static org.firstinspires.ftc.teamcode.commandBased.Constants.DRIVE_FAST_STRAFE;
 import static org.firstinspires.ftc.teamcode.commandBased.Constants.DRIVE_FAST_TURN;
@@ -169,6 +170,10 @@ public class Final extends TeleOpMode {
     @Override
     public void run() {
         super.run();
+
+        if (DEBUG_DRIVE) {
+            tad("heading", drivetrainSS.getHeading());
+        }
     }
 
 
