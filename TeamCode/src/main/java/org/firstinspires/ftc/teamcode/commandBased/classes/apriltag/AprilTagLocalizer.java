@@ -2,18 +2,11 @@ package org.firstinspires.ftc.teamcode.commandBased.classes.apriltag;
 
 import android.util.Size;
 
-import com.ThermalEquilibrium.homeostasis.Filters.FilterAlgorithms.KalmanFilter;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.util.MovingStatistics;
-import com.qualcomm.robotcore.util.RollingAverage;
 
-import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.teamcode.commandBased.classes.util.EulerAngles;
-import org.firstinspires.ftc.teamcode.commandBased.classes.util.MathEx;
+import org.firstinspires.ftc.teamcode.commandBased.classes.util.KalmanFilter;
 import org.firstinspires.ftc.teamcode.commandBased.classes.util.geometry.Pose3d;
 import org.firstinspires.ftc.teamcode.commandBased.classes.util.geometry.Rotation3d;
 import org.firstinspires.ftc.teamcode.commandBased.classes.util.geometry.Transform3d;
@@ -21,7 +14,6 @@ import org.firstinspires.ftc.teamcode.commandBased.classes.util.geometry.Vector3
 import org.firstinspires.ftc.teamcode.commandBased.subsystems.DrivetrainSubsystem;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
-import org.firstinspires.ftc.vision.apriltag.AprilTagLibrary;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.List;
@@ -29,10 +21,16 @@ import java.util.List;
 @Config
 public class AprilTagLocalizer {
 
-    private final DrivetrainSubsystem drive;
-    private Pose3d cameraPose;
+    private final double q = 1;
+    private final double r = 0.5;
+    private final int n = 3;
 
-    private KalmanFilter
+    private final DrivetrainSubsystem drive;
+    private final Pose3d cameraPose;
+
+    private final KalmanFilter rollFilter;
+    private final KalmanFilter pitchFilter;
+    private final KalmanFilter yawFilter;
 
     private final AprilTagProcessor tagProcessor;
     private final VisionPortal visionPortal;
@@ -43,6 +41,8 @@ public class AprilTagLocalizer {
     private Pose3d tagPose;
     private Transform3d camToTarget;
     private Pose3d camPose;
+    private Transform3d robotToCam;
+    private Pose3d robotPose;
 
     public AprilTagLocalizer(
             DrivetrainSubsystem drive,
@@ -59,7 +59,12 @@ public class AprilTagLocalizer {
                 .setDrawTagOutline(true)
                 .setDrawAxes(true)
                 .setDrawCubeProjection(true)
-                .setLensIntrinsics(cameraIntrinsics.getFx(), cameraIntrinsics.getFy(), cameraIntrinsics.getCx(), cameraIntrinsics.getCy())
+                .setLensIntrinsics(
+                        cameraIntrinsics.getFx(),
+                        cameraIntrinsics.getFy(),
+                        cameraIntrinsics.getCx(),
+                        cameraIntrinsics.getCy()
+                )
                 .setTagLibrary(AprilTagCustomDatabase.getTestingLibrary())
                 .build();
 
@@ -72,6 +77,10 @@ public class AprilTagLocalizer {
                 .setAutoStopLiveView(true)
                 .build();
 
+        rollFilter = new KalmanFilter(q, r, n);
+        pitchFilter = new KalmanFilter(q, r, n);
+        yawFilter = new KalmanFilter(q, r, n);
+
         tags = tagProcessor.getDetections();
     }
 
@@ -83,7 +92,9 @@ public class AprilTagLocalizer {
         if (targetTag != null) {
             tagPose = calculateTagPose(targetTag);
             camToTarget = calculateCamToTarget(targetTag);
-            camPose = calculateCameraPose(targetTag);
+            camPose = calculateCamPose(targetTag);
+            robotToCam = calculateRobotToCamera(cameraPose);
+            robotPose = calculateRobotPose(camPose, robotToCam);
         }
     }
 
@@ -111,14 +122,43 @@ public class AprilTagLocalizer {
     public Transform3d calculateCamToTarget(AprilTagDetection tag) {
         return new Transform3d(
                 new Vector3d(tag.ftcPose.x, tag.ftcPose.y, tag.ftcPose.z),
-                new Rotation3d(toRad(tag.ftcPose.roll), toRad(tag.ftcPose.pitch), toRad(tag.ftcPose.yaw))
+                new Rotation3d(
+                        toRad(tag.ftcPose.roll),
+                        toRad(tag.ftcPose.pitch),
+                        toRad(tag.ftcPose.yaw)
+                )
         );
     }
 
-    private Pose3d calculateCameraPose(AprilTagDetection tag) {
-        Pose3d tagPose = calculateTagPose(tag);
-        Transform3d camToTarget = calculateCamToTarget(tag);
+    private Pose3d calculateCamPose(AprilTagDetection tag) {
+        Pose3d tagPose = new Pose3d(
+                new Vector3d(tag.metadata.fieldPosition),
+                new Rotation3d(tag.metadata.fieldOrientation)
+        );
+
+        Transform3d camToTarget = new Transform3d(
+                new Vector3d(tag.ftcPose.x, tag.ftcPose.y, tag.ftcPose.z),
+                new Rotation3d(
+                        toRad(tag.ftcPose.roll),
+                        toRad(tag.ftcPose.pitch),
+                        toRad(tag.ftcPose.yaw)
+                )
+        );
+
         return tagPose.transformBy(camToTarget.inverse());
+    }
+
+
+
+    public Transform3d calculateRobotToCamera(Pose3d cameraPose) {
+        return new Transform3d(
+                cameraPose.getVector(),
+                cameraPose.getRotation()
+        );
+    }
+
+    public Pose3d calculateRobotPose(Pose3d cameraPose, Transform3d robotToCam) {
+        return cameraPose.transformBy(robotToCam.inverse());
     }
 
 
@@ -138,12 +178,24 @@ public class AprilTagLocalizer {
         return camPose;
     }
 
+    public Transform3d getRobotToCam() {
+        return robotToCam;
+    }
+
+    public Pose3d getRobotPose() {
+        return robotPose;
+    }
+
     public VisionPortal.CameraState getCameraState() {
         return visionPortal.getCameraState();
     }
 
     public double getFPS() {
         return visionPortal.getFps();
+    }
+
+    public double getHeading() {
+        return drive.getRawExternalHeading();
     }
 
     public double toRad(double deg) {

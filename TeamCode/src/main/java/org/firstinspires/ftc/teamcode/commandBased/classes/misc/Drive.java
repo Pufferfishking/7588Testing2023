@@ -5,6 +5,8 @@ import com.ThermalEquilibrium.homeostasis.Parameters.PIDCoefficientsEx;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
 
 import org.firstinspires.ftc.teamcode.commandBased.classes.pid.DeadzonePID;
+import org.firstinspires.ftc.teamcode.commandBased.classes.poofypid.PoofyPIDCoefficients;
+import org.firstinspires.ftc.teamcode.commandBased.classes.poofypid.PoofyPIDController;
 import org.firstinspires.ftc.teamcode.commandBased.classes.util.geometry.Pose2d;
 import org.firstinspires.ftc.teamcode.commandBased.classes.util.geometry.Vector2d;
 
@@ -12,8 +14,11 @@ public class Drive {
 
     private final Motor frontLeft, frontRight, backLeft, backRight;
     private double maxOutput = 1;
+
+    private final PoofyPIDController xController;
+    private final PoofyPIDController yController;
     private final DeadzonePID headingDeadzone;
-    private final AngleController headingController;
+    private final AngleController thetaController;
 
     private double turnSpeed;
     private double theta;
@@ -25,17 +30,28 @@ public class Drive {
         this.frontRight = frontRight;
         this.backLeft = backLeft;
         this.backRight = backRight;
+        xController = new PoofyPIDController(0, 0, 0);
+        yController = new PoofyPIDController(0, 0, 0);
         headingDeadzone = new DeadzonePID(new PIDCoefficientsEx(0, 0, 0, 1, 1, 0), 2);
-        headingController = new AngleController(headingDeadzone);
+        thetaController = new AngleController(headingDeadzone);
     }
 
-    public Drive(Motor frontLeft, Motor frontRight, Motor backLeft, Motor backRight, PIDCoefficientsEx turningCoeffs) {
+    public Drive(Motor frontLeft,
+                 Motor frontRight,
+                 Motor backLeft,
+                 Motor backRight,
+                 PIDCoefficientsEx turningCoeffs,
+                 PoofyPIDCoefficients xCoeffs,
+                 PoofyPIDCoefficients yCoeffs
+    ) {
         this.frontLeft = frontLeft;
         this.frontRight = frontRight;
         this.backLeft = backLeft;
         this.backRight = backRight;
+        xController = new PoofyPIDController(xCoeffs);
+        yController = new PoofyPIDController(yCoeffs);
         headingDeadzone = new DeadzonePID(turningCoeffs, Math.toRadians(2));
-        headingController = new AngleController(headingDeadzone);
+        thetaController = new AngleController(headingDeadzone);
         currentPose = new Pose2d(0, 0, 0);
     }
 
@@ -58,8 +74,11 @@ public class Drive {
         );
     }
 
-    public void driveFieldCentric(double strafeSpeed, double forwardSpeed,
-                                  double turnSpeed, double gyroAngle) {
+    public void driveFieldCentric(double strafeSpeed,
+                                  double forwardSpeed,
+                                  double turnSpeed,
+                                  double gyroAngle
+    ) {
         Vector2d input = new Vector2d(strafeSpeed, forwardSpeed);
         input = input.rotateBy(-gyroAngle);
 
@@ -70,9 +89,13 @@ public class Drive {
         );
     }
 
-    public void drivePointCentric(double strafeSpeed, double forwardSpeed,
+    public void drivePointCentric(double strafeSpeed,
+                                  double forwardSpeed,
                                   double gyroAngle,
-                                  Vector2d target, Pose2d currentPose, double angleOffset) {
+                                  Vector2d target,
+                                  Pose2d currentPose,
+                                  double angleOffset
+    ) {
 
         this.currentPose = currentPose;
 
@@ -80,7 +103,7 @@ public class Drive {
 
         theta = difference.getAngle() + Math.toRadians(angleOffset);
 
-        turnSpeed = headingController.calculate(theta, currentPose.getTheta());
+        turnSpeed = thetaController.calculate(theta, currentPose.getTheta());
 
         double turnError = Math.abs(theta = currentPose.getTheta());
 //
@@ -92,6 +115,24 @@ public class Drive {
                 forwardSpeed,
                 -turnSpeed,
                 gyroAngle
+        );
+    }
+
+    public void driveFollowTag(Pose2d tagPose,
+                               Pose2d targetFollowingPose
+    ) {
+        xController.setTargetPosition(targetFollowingPose.getX());
+        double forwardSpeed = xController.calculate(tagPose.getX());
+
+        yController.setTargetPosition(targetFollowingPose.getY());
+        double strafeSpeed = yController.calculate(tagPose.getY());
+
+        double turnSpeed = thetaController.calculate(targetFollowingPose.getTheta(), tagPose.getTheta());
+
+        driveRobotCentric(
+                strafeSpeed,
+                forwardSpeed,
+                turnSpeed
         );
     }
 

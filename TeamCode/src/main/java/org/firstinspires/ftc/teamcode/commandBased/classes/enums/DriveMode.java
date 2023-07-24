@@ -4,6 +4,7 @@ public class DriveMode {
     public enum Mode {
         FIELD_CENTRIC,
         ROBOT_CENTRIC,
-        POINT_CENTRIC
+        POINT_CENTRIC,
+        FOLLOW_TAG
     }
 }

@@ -22,6 +22,12 @@ public class PoofyPIDController extends PoofyFeedForwardController{
         this.kD = kD;
     }
 
+    public PoofyPIDController(PoofyPIDCoefficients coeffs) {
+        this.kP = coeffs.getkP();
+        this.kI = coeffs.getkI();
+        this.kD = coeffs.getkD();
+    }
+
     @Override
     public double calculate(double measuredPosition) {
         double dt = getDT();

@@ -9,6 +9,7 @@ import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.qualcomm.robotcore.hardware.PwmControl;
 
 import org.firstinspires.ftc.teamcode.commandBased.classes.apriltag.CameraIntrinsics;
+import org.firstinspires.ftc.teamcode.commandBased.classes.poofypid.PoofyPIDCoefficients;
 import org.firstinspires.ftc.teamcode.commandBased.classes.util.geometry.Pose3d;
 import org.firstinspires.ftc.teamcode.commandBased.classes.util.geometry.Rotation3d;
 import org.firstinspires.ftc.teamcode.commandBased.classes.util.geometry.Vector2d;
@@ -27,7 +28,7 @@ public class Constants {
     public static boolean DEBUG_COMMANDS = false;
 
     //display toggle
-    public static boolean DISPLAY = true;
+    public static boolean DISPLAY = false;
 
     //config
     public static String FRONT_LEFT_DRIVE = "fL";
@@ -61,7 +62,12 @@ public class Constants {
 
     public static double TRACK_WIDTH = 13;
     public static double DRIVE_KV = 0;
-    public static PIDCoefficientsEx TURN_COEFFS = new PIDCoefficientsEx(1, 0.2, 0.2, 1, 0, 0);
+
+    public static PoofyPIDCoefficients X_COEFFS = new PoofyPIDCoefficients(1, 0, 0);
+    public static PoofyPIDCoefficients Y_COEFFS = new PoofyPIDCoefficients(1, 0, 0);
+
+    public static PIDCoefficientsEx TURN_COEFFS = new PIDCoefficientsEx(0, 0, 0, 1, 0, 0);
+
     public static Vector2d TARGET = new Vector2d(-10, 0);
     public static Pose2d STARTING_POINT = new Pose2d(0, 0, Math.toRadians(0));
     public static double ANGLE_OFFSET = 180;

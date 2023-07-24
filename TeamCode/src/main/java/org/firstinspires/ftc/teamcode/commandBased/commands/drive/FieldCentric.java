@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.commandBased.commands.drive;
 import com.arcrobotics.ftclib.command.CommandBase;
 
 import org.firstinspires.ftc.teamcode.commandBased.subsystems.DrivetrainSubsystem;
-
 import java.util.function.DoubleSupplier;
 
 public class FieldCentric extends CommandBase {
@@ -28,6 +27,6 @@ public class FieldCentric extends CommandBase {
     @Override
     public void execute() {
         double turn = m_drivetrainSubsystem.getTurnAmount(turnSpeed.getAsDouble());
-        m_drivetrainSubsystem.fieldCentric(strafeSpeed.getAsDouble(), forwardSpeed.getAsDouble(), turnSpeed.getAsDouble());
+        m_drivetrainSubsystem.fieldCentricMode(strafeSpeed.getAsDouble(), forwardSpeed.getAsDouble(), turnSpeed.getAsDouble());
     }
 }

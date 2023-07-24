@@ -13,6 +13,13 @@ public class KalmanFilter {
     private LinearRegression regression;
     private SizedStack<Double> stack;
 
+
+    /**
+     * A kalman filter that uses a least squares regression as it's model.
+     * @param q Sensor Covariance
+     * @param r Model Covariance
+     * @param n Number of elements we can hold in our stack.
+     */
     public KalmanFilter(double q, double r, int n) {
         this.q = q;
         this.r = r;

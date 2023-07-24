@@ -30,7 +30,7 @@ public class PointCentric extends CommandBase {
 
     @Override
     public void execute() {
-        m_drivetrainSubsystem.pointCentric(
+        m_drivetrainSubsystem.pointCentricMode(
                 strafeSpeed.getAsDouble(),
                 forwardSpeed.getAsDouble(),
                 target,

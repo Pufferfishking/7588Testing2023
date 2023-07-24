@@ -22,8 +22,12 @@ import org.firstinspires.ftc.teamcode.commandBased.classes.enums.DriveMode;
 import org.firstinspires.ftc.teamcode.commandBased.classes.pid.DeadzonePID;
 import org.firstinspires.ftc.teamcode.commandBased.classes.misc.Drive;
 import org.firstinspires.ftc.teamcode.commandBased.classes.pid.PIDOpenClosed;
+import org.firstinspires.ftc.teamcode.commandBased.classes.util.geometry.Pose3d;
+import org.firstinspires.ftc.teamcode.commandBased.classes.util.geometry.Transform3d;
 import org.firstinspires.ftc.teamcode.commandBased.classes.util.geometry.Vector2d;
 import org.firstinspires.ftc.teamcode.commandBased.Constants;
+import org.firstinspires.ftc.vision.VisionPortal;
+import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
 import static org.firstinspires.ftc.teamcode.commandBased.Constants.*;
 
@@ -85,7 +89,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
         m_rL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         m_rR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        drive = new Drive(fL, fR, rL, rR, Constants.TURN_COEFFS);
+        drive = new Drive(fL, fR, rL, rR, TURN_COEFFS, X_COEFFS, Y_COEFFS);
 
         //turning pid
         turningCoeffs = new PIDCoefficientsEx(1.5, 0.4, 0.4, 0.25, 2, 0.5);
@@ -109,41 +113,42 @@ public class DrivetrainSubsystem extends SubsystemBase {
                 PERPENDICULAR_ENCODER
         );
 
-//        atLocalizer = new AprilTagLocalizer(
-//                this,
-//                hwMap,
-//                CAMERA_POSE,
-//                CAMERA_1,
-//                C920_INTRINSICS
-//        );
+        atLocalizer = new AprilTagLocalizer(
+                this,
+                hwMap,
+                CAMERA_POSE,
+                CAMERA_1,
+                C920_INTRINSICS
+        );
+
     }
 
     @Override
     public void periodic() {
         heading = getRawExternalHeading();
-        //atLocalizer.update();
+        atLocalizer.update();
     }
 
 
-//    public Pose3d getTagPose() {
-//        return atLocalizer.getTagPose();
-//    }
-//
-//    public Transform3d getCamToTarget() {
-//        return atLocalizer.getCamToTarget();
-//    }
-//
-//    public Pose3d getCameraPose() {
-//        return atLocalizer.getCameraPose();
-//    }
-//
-//    public AprilTagDetection getTargetTag() {
-//        return atLocalizer.getTargetTag();
-//    }
-//
-//    public VisionPortal.CameraState getCameraState() {
-//        return atLocalizer.getCameraState();
-//    }
+    public Pose3d getTagPose() {
+        return atLocalizer.getTagPose();
+    }
+
+    public Transform3d getCamToTarget() {
+        return atLocalizer.getCamToTarget();
+    }
+
+    public Pose3d getCameraPose() {
+        return atLocalizer.getCameraPose();
+    }
+
+    public AprilTagDetection getTargetTag() {
+        return atLocalizer.getTargetTag();
+    }
+
+    public VisionPortal.CameraState getCameraState() {
+        return atLocalizer.getCameraState();
+    }
 
     public void setSpeedMultipliers(double strafeMultiplier, double forwardMultiplier, double turnMultiplier) {
         this.strafeMultiplier = strafeMultiplier;
@@ -151,7 +156,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
         this.turnMultiplier = turnMultiplier;
     }
 
-    public void fieldCentric(double strafeSpeed, double forwardSpeed, double turnSpeed) {
+    public void fieldCentricMode(double strafeSpeed, double forwardSpeed, double turnSpeed) {
         drive.driveFieldCentric(
                 strafeSpeed * strafeMultiplier,
                 forwardSpeed * forwardMultiplier,
@@ -161,7 +166,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
         mode = DriveMode.Mode.FIELD_CENTRIC;
     }
 
-    public void robotCentric(double strafeSpeed, double forwardSpeed, double turnSpeed) {
+    public void robotCentricMode(double strafeSpeed, double forwardSpeed, double turnSpeed) {
         drive.driveRobotCentric(
                 strafeSpeed * strafeMultiplier,
                 forwardSpeed * forwardMultiplier,
@@ -170,7 +175,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
         mode = DriveMode.Mode.ROBOT_CENTRIC;
     }
 
-    public void pointCentric(double strafeSpeed, double forwardSpeed, Vector2d target, Pose2d pose, double angleOffset) {
+    public void pointCentricMode(double strafeSpeed, double forwardSpeed, Vector2d target, Pose2d pose, double angleOffset) {
         drive.drivePointCentric(
                 strafeSpeed * strafeMultiplier,
                 forwardSpeed * forwardMultiplier,
@@ -180,6 +185,17 @@ public class DrivetrainSubsystem extends SubsystemBase {
                 angleOffset
         );
         mode = DriveMode.Mode.POINT_CENTRIC;
+    }
+
+    public void followTagMode(Pose2d followPose) {
+        drive.driveFollowTag(
+                new Pose2d(
+                        getTargetTag().ftcPose.x,
+                        getTargetTag().ftcPose.y,
+                        getTargetTag().ftcPose.yaw
+                ),
+                followPose);
+        mode = DriveMode.Mode.FOLLOW_TAG;
     }
 
     public void resetGyro() {

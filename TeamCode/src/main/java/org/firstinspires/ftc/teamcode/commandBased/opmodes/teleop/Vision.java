@@ -1,24 +1,19 @@
 package org.firstinspires.ftc.teamcode.commandBased.opmodes.teleop;
 
 import android.annotation.SuppressLint;
-import android.util.Size;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.arcrobotics.ftclib.command.InstantCommand;
+import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.Quaternion;
-import org.firstinspires.ftc.teamcode.commandBased.classes.apriltag.AprilTagLocalizer;
+import org.firstinspires.ftc.teamcode.commandBased.classes.util.KalmanFilter;
+import org.firstinspires.ftc.teamcode.commandBased.classes.util.geometry.Pose2d;
 import org.firstinspires.ftc.teamcode.commandBased.classes.util.geometry.Pose3d;
 import org.firstinspires.ftc.teamcode.commandBased.classes.util.geometry.Transform3d;
+import org.firstinspires.ftc.teamcode.commandBased.commands.drive.FollowTag;
 import org.firstinspires.ftc.teamcode.commandBased.opmodes.TeleOpMode;
-import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
-import org.firstinspires.ftc.vision.apriltag.AprilTagGameDatabase;
-import org.firstinspires.ftc.vision.apriltag.AprilTagLibrary;
-import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import static org.firstinspires.ftc.teamcode.commandBased.Constants.*;
 
@@ -26,27 +21,17 @@ import static org.firstinspires.ftc.teamcode.commandBased.Constants.*;
 @Config
 public class Vision extends TeleOpMode {
 
-    private AprilTagProcessor tagProcessor;
-    private VisionPortal visionPortal;
+    protected FollowTag followTag;
 
-    public static double r = 0;
-    public static double p = 0;
-    public static double y = 0;
-
-    private AprilTagLocalizer atLocalizer;
+    protected Pose2d followPose = new Pose2d(0, 40, 0);
 
     @Override
     public void initialize() {
         super.initialize();
 
-        atLocalizer = new AprilTagLocalizer(
-                drivetrainSS,
-                hardwareMap,
-                CAMERA_POSE,
-                CAMERA_1,
-                C920_INTRINSICS
-        );
+        followTag = new FollowTag(drivetrainSS, followPose);
 
+        //followTag.schedule();
         printCameraState();
     }
 
@@ -54,40 +39,27 @@ public class Vision extends TeleOpMode {
     @Override
     public void run() {
         super.run();
-        atLocalizer.update();
 
-        AprilTagDetection tag = atLocalizer.getTargetTag();
+        AprilTagDetection tag = drivetrainSS.getTargetTag();
 
-        Pose3d tagPose = atLocalizer.getTagPose();
-        Transform3d camToTarget = atLocalizer.getCamToTarget();
-        Pose3d camPose = atLocalizer.getCameraPose();
+        Pose3d tagPose = drivetrainSS.getTagPose();
+        Transform3d camToTarget = drivetrainSS.getCamToTarget();
+        Pose3d camPose = drivetrainSS.getCameraPose();
 
-        r = tag.ftcPose.roll;
-        p = tag.ftcPose.pitch;
-        y = tag.ftcPose.yaw;
+        Pose2d follow = new Pose2d(tag.ftcPose.x, tag.ftcPose.y, tag.ftcPose.yaw).plus(followPose);
 
         if (camPose != null && tag != null) {
+
             tal("Raw Tag Readings");
-            //tal(String.format("XYZ %6.1f %6.1f %6.1f  (inch)", tag.ftcPose.x, tag.ftcPose.y, tag.ftcPose.z));
-            tal(String.format("RPY %6.1f %6.1f %6.1f  (deg)", tag.ftcPose.roll, tag.ftcPose.pitch, tag.ftcPose.yaw));
+            tal(String.format("XY T %6.1f %6.1f %7.1f  (inch)", tag.ftcPose.x, tag.ftcPose.y, tag.ftcPose.yaw));
+            tal(String.format("XY T %6.1f %6.1f %7.1f  ", follow.x, follow.y, follow.theta));
             tal();
-
-            tal(String.format("Filtered RPY %6.1f %6.1f %6.1f  (deg)", r, p, y));
-
-            tal("Tag Pose:");
-            tal(tagPose.toString());
-            tal();
-
-            tal("Cam to Target:");
-            tal(camToTarget.toString());
-            tal();
-
+//            tal(String.format("RPY %6.1f %6.1f %6.1f  (deg)", tag.ftcPose.roll, tag.ftcPose.pitch, tag.ftcPose.yaw));
             tal("Camera Pose");
             tal(camPose.toString());
             tal();
-
-
-
+            tad("running", followTag.isScheduled());
+            tal();
 
 
         } else {
@@ -99,47 +71,9 @@ public class Vision extends TeleOpMode {
 
     //MISC. FUNCTIONS
 
-    public static AprilTagLibrary getCustomTagLibrary() {
-        return new AprilTagLibrary.Builder()
-                .addTag(0, "MEOW",
-                        0.166, new VectorF(0,0,0), DistanceUnit.METER,
-                        Quaternion.identityQuaternion())
-                .addTag(1, "WOOF",
-                        0.322, new VectorF(0,0,0), DistanceUnit.METER,
-                        Quaternion.identityQuaternion())
-                .addTag(2, "OINK",
-                        0.166, new VectorF(0,0,0), DistanceUnit.METER,
-                        Quaternion.identityQuaternion())
-                .build();
-    }
-
-    private void initTagProcessors() {
-        //init processor 1
-        tagProcessor = new AprilTagProcessor.Builder()
-                .setDrawTagID(true)
-                .setDrawTagOutline(true)
-                .setDrawAxes(true)
-                .setDrawCubeProjection(true)
-                .setLensIntrinsics(FX1, FY1, CX1, CY1)
-                .setTagLibrary(AprilTagGameDatabase.getCurrentGameTagLibrary())
-                .build();
-    }
-
-    private void initVisionPortals() {
-        //init portal 1
-        visionPortal = new VisionPortal.Builder()
-                .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
-                .addProcessor(tagProcessor)
-                .setCameraResolution(new Size(640, 480))
-                .setStreamFormat(VisionPortal.StreamFormat.YUY2)
-                .enableCameraMonitoring(true)
-                .setAutoStopLiveView(true)
-                .build();
-    }
-
     protected void printCameraState() {
         while (!isStarted() && !isStopRequested()) {
-            tad("Camera", atLocalizer.getCameraState());
+            tad("Camera", drivetrainSS.getCameraState());
             tele.update();
         }
     }
