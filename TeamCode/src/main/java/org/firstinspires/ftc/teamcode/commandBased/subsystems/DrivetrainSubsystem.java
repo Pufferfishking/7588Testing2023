@@ -6,6 +6,7 @@ import com.acmerobotics.dashboard.config.Config;
 
 import org.firstinspires.ftc.teamcode.commandBased.classes.apriltag.AprilTagLocalizer;
 import org.firstinspires.ftc.teamcode.commandBased.classes.TwoWheelLocalizer;
+import org.firstinspires.ftc.teamcode.commandBased.classes.apriltag.AprilTagLocalizerDouble;
 import org.firstinspires.ftc.teamcode.commandBased.classes.util.geometry.Pose2d;
 
 import com.arcrobotics.ftclib.command.SubsystemBase;
@@ -56,7 +57,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     private double turningPIDDeadzone = 0.25;
 
     private TwoWheelLocalizer dwLocalizer;
-    private AprilTagLocalizer atLocalizer;
+    private AprilTagLocalizerDouble atLocalizer;
     private com.acmerobotics.roadrunner.geometry.Pose2d pose = new com.acmerobotics.roadrunner.geometry.Pose2d(0, 0, 0);
 
     private final Drive drive;
@@ -113,7 +114,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
                 PERPENDICULAR_ENCODER
         );
 
-        atLocalizer = new AprilTagLocalizer(
+        atLocalizer = new AprilTagLocalizerDouble(
                 this,
                 hwMap,
                 CAMERA_POSE,

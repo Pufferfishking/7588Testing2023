@@ -1,6 +1,5 @@
-package org.firstinspires.ftc.teamcode.commandBased.opmodes.tuning;
+package org.firstinspires.ftc.teamcode.commandBased.opmodes.teleop;
 
-import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.A;
 import static org.firstinspires.ftc.teamcode.commandBased.Constants.CX1;
 import static org.firstinspires.ftc.teamcode.commandBased.Constants.CY1;
 import static org.firstinspires.ftc.teamcode.commandBased.Constants.FX1;
@@ -8,7 +7,6 @@ import static org.firstinspires.ftc.teamcode.commandBased.Constants.FY1;
 
 import android.util.Size;
 
-import com.arcrobotics.ftclib.command.InstantCommand;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -18,38 +16,30 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagGameDatabase;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
-public class DoubleVision extends TeleOpMode {
+@TeleOp
+public class VisionDouble extends TeleOpMode {
 
     private AprilTagProcessor tagProcessor1;
     private VisionPortal visionPortal1;
-    private int viewID1;
 
     private AprilTagProcessor tagProcessor2;
     private VisionPortal visionPortal2;
-    private int viewID2;
 
-    private InstantCommand toggleCameras;
-
-    private boolean onRun = true;
+    private double loopTime = 0;
 
     @Override
     public void initialize() {
         super.initialize();
 
+        //tele.setMsTransmissionInterval(50);
+
         initTagProcessors();
         initVisionPortals();
-
-        toggleCameras = new InstantCommand(this::toggleCameras);
 
     }
 
     @Override
     public void run() {
-        super.run();
-        if (onRun) {
-            visionPortal2.stopStreaming();
-            onRun = false;
-        }
 
 //        tad("fps", visionPortal1.getFps());
 //        tal();
@@ -58,7 +48,8 @@ public class DoubleVision extends TeleOpMode {
 //            printTagDataBasic(detection);
 //        }
 
-        gp1(A, 1).whenActive(toggleCameras);
+        telemetry.addData("loop time", System.currentTimeMillis() - loopTime);
+        loopTime = System.currentTimeMillis();
 
     }
 
@@ -92,8 +83,8 @@ public class DoubleVision extends TeleOpMode {
         int[] portalsList;
 
         portalsList = VisionPortal.makeMultiPortalView(2, VisionPortal.MultiPortalLayout.HORIZONTAL);
-        viewID1 = portalsList[0];
-        viewID2 = portalsList[1];
+        int viewID1 = portalsList[0];
+        int viewID2 = portalsList[1];
 
         //init portal 1
         visionPortal1 = new VisionPortal.Builder()

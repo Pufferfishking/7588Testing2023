@@ -31,6 +31,8 @@ public class Vision extends TeleOpMode {
     public void initialize() {
         super.initialize();
 
+        tele.setMsTransmissionInterval(100);
+
         followTag = new FollowTag(drivetrainSS, followPose);
 
         //followTag.schedule();
