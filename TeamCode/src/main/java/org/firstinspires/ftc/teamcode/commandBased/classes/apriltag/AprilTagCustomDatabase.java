@@ -44,28 +44,28 @@ public class AprilTagCustomDatabase {
         return new AprilTagLibrary.Builder()
                 .addTag(0,
                         "MEOW",
-                        3,
+                        3.1,
                         new VectorF(0, 0, 0),
                         DistanceUnit.INCH,
                         MathEx.eulerToQuaternion(0, 0, 0)
                 )
                 .addTag(1,
                         "WOOF",
-                        3,
+                        3.1,
                         new VectorF(0, 0, 0),
                         DistanceUnit.INCH,
                         MathEx.eulerToQuaternion(0, 0, 0)
                 )
                 .addTag(2,
                         "OINK",
-                        3,
+                        3.1,
                         new VectorF(0, 0, 0),
                         DistanceUnit.INCH,
                         MathEx.eulerToQuaternion(0, 0, 0)
                 )
                 .addTag(3,
                         "RAWR",
-                        3,
+                        3.1,
                         new VectorF(0, 0, 0),
                         DistanceUnit.INCH,
                         MathEx.eulerToQuaternion(0, 0, 0)

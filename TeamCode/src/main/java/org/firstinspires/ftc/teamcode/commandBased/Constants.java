@@ -64,9 +64,9 @@ public class Constants {
     public static double DRIVE_KV = 0;
 
     public static PoofyPIDCoefficients X_COEFFS = new PoofyPIDCoefficients(0.05, 0, 0);
-    public static PoofyPIDCoefficients Y_COEFFS = new PoofyPIDCoefficients(0.05, 0, 0);
+    public static PoofyPIDCoefficients Y_COEFFS = new PoofyPIDCoefficients(0.07, 0, 0);
 
-    public static PIDCoefficientsEx TURN_COEFFS = new PIDCoefficientsEx(0.25, 0, 0, 1, 0, 0);
+    public static PIDCoefficientsEx TURN_COEFFS = new PIDCoefficientsEx(0.6, 0, 0, 1, 0, 0);
 
     public static Vector2d TARGET = new Vector2d(-10, 0);
     public static Pose2d STARTING_POINT = new Pose2d(0, 0, Math.toRadians(0));
@@ -163,7 +163,8 @@ public class Constants {
 
 
     //VISION
-    public static CameraIntrinsics C920_INTRINSICS = new CameraIntrinsics(810.073, 810.073, 214.359, 243.298);
+    public static CameraIntrinsics C920_OLD_INTRINSICS = new CameraIntrinsics(810.073, 810.073, 214.359, 243.298);
+    public static CameraIntrinsics C920_INTRINSICS = new CameraIntrinsics(622.001, 622.001, 319.803, 241.251);
     public static double FX1 = 810.073;
     public static double FY1 = 810.073;
     public static double CX1 = 214.359;

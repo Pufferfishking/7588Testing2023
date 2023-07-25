@@ -23,7 +23,7 @@ public class Vision extends TeleOpMode {
 
     protected FollowTag followTag;
 
-    protected Pose2d followPose = new Pose2d(0, 40, 0);
+    protected Pose2d followPose = new Pose2d(5, 40, 0);
 
 
 
@@ -33,7 +33,7 @@ public class Vision extends TeleOpMode {
 
         followTag = new FollowTag(drivetrainSS, followPose);
 
-        followTag.schedule();
+        //followTag.schedule();
         printCameraState();
     }
 
@@ -53,15 +53,13 @@ public class Vision extends TeleOpMode {
             Pose2d follow = new Pose2d(tag.ftcPose.x, tag.ftcPose.y, tag.ftcPose.yaw).plus(followPose);
 
             tal("Raw Tag Readings");
-            tal(String.format("XY T %6.1f %6.1f %7.1f  (inch)", tag.ftcPose.x, tag.ftcPose.y, tag.ftcPose.yaw));
+            tal(String.format("XYZ %6.1f %6.1f %7.1f  (inch)", tag.ftcPose.x, tag.ftcPose.y, tag.ftcPose.z));
 //            tal(String.format("XY T %6.1f %6.1f %7.1f  ", follow.x, follow.y, follow.theta));
             tad("t", tagPose.toPose2d().getTheta());
             tal();
 //            tal(String.format("RPY %6.1f %6.1f %6.1f  (deg)", tag.ftcPose.roll, tag.ftcPose.pitch, tag.ftcPose.yaw));
             tal("Camera Pose");
             tal(camPose.toString());
-            tal();
-            tad("running", followTag.isScheduled());
             tal();
 
 

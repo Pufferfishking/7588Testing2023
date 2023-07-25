@@ -5,7 +5,12 @@ import android.util.Size;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.Camera;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainControl;
+import org.firstinspires.ftc.robotcore.internal.camera.CameraState;
 import org.firstinspires.ftc.teamcode.commandBased.classes.util.KalmanFilter;
 import org.firstinspires.ftc.teamcode.commandBased.classes.util.geometry.Pose3d;
 import org.firstinspires.ftc.teamcode.commandBased.classes.util.geometry.Rotation3d;
@@ -17,6 +22,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Config
 public class AprilTagLocalizer {
@@ -44,6 +50,12 @@ public class AprilTagLocalizer {
     private Transform3d robotToCam;
     private Pose3d robotPose;
 
+    private WebcamName camera = null;
+    private ExposureControl exposure;
+    private GainControl gain;
+
+    private boolean start = false;
+
     public AprilTagLocalizer(
             DrivetrainSubsystem drive,
             HardwareMap hwMap,
@@ -53,6 +65,8 @@ public class AprilTagLocalizer {
     ) {
         this.drive = drive;
         this.cameraPose = cameraPose;
+
+        camera = hwMap.get(WebcamName.class, cameraName);
 
         tagProcessor = new AprilTagProcessor.Builder()
                 .setDrawTagID(true)
@@ -69,13 +83,25 @@ public class AprilTagLocalizer {
                 .build();
 
         visionPortal = new VisionPortal.Builder()
-                .setCamera(hwMap.get(WebcamName.class, cameraName))
+                .setCamera(camera)
                 .addProcessor(tagProcessor)
                 .setCameraResolution(new Size(640, 480))
-                .setStreamFormat(VisionPortal.StreamFormat.YUY2)
+                .setStreamFormat(VisionPortal.StreamFormat.MJPEG)
                 .enableCameraMonitoring(true)
                 .setAutoStopLiveView(true)
                 .build();
+
+        while (visionPortal.getCameraState() != VisionPortal.CameraState.STREAMING) {
+
+        }
+
+        exposure = visionPortal.getCameraControl(ExposureControl.class);
+        gain = visionPortal.getCameraControl(GainControl.class);
+
+        exposure.setMode(ExposureControl.Mode.Manual);
+
+        exposure.setExposure(10, TimeUnit.MILLISECONDS);
+        gain.setGain(255);
 
         rollFilter = new KalmanFilter(q, r, n);
         pitchFilter = new KalmanFilter(q, r, n);
@@ -85,6 +111,11 @@ public class AprilTagLocalizer {
     }
 
     public void update() {
+        if (!start) {
+
+            start = true;
+        }
+
         tags = tagProcessor.getDetections();
 
         targetTag = findTargetTag(tags);
