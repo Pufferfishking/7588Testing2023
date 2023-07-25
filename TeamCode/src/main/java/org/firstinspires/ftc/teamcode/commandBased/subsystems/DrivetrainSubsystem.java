@@ -188,13 +188,17 @@ public class DrivetrainSubsystem extends SubsystemBase {
     }
 
     public void followTagMode(Pose2d followPose) {
-        drive.driveFollowTag(
-                new Pose2d(
-                        getTargetTag().ftcPose.x,
-                        getTargetTag().ftcPose.y,
-                        getTargetTag().ftcPose.yaw
-                ),
-                followPose);
+        if (getTargetTag() != null) {
+            drive.driveFollowTag(
+                    new Pose2d(
+                            getTargetTag().ftcPose.x,
+                            getTargetTag().ftcPose.y,
+                            getTargetTag().ftcPose.yaw
+                    ),
+                    followPose);
+        } else {
+            drive.driveRobotCentric(0, 0, 0);
+        }
         mode = DriveMode.Mode.FOLLOW_TAG;
     }
 

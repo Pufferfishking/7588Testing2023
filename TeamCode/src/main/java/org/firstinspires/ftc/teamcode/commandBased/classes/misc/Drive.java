@@ -25,6 +25,8 @@ public class Drive {
 
     private Pose2d currentPose;
 
+    private double[] speeds = new double[3];
+
     public Drive(Motor frontLeft, Motor frontRight, Motor backLeft, Motor backRight) {
         this.frontLeft = frontLeft;
         this.frontRight = frontRight;
@@ -122,16 +124,16 @@ public class Drive {
                                Pose2d targetFollowingPose
     ) {
         xController.setTargetPosition(targetFollowingPose.getX());
-        double forwardSpeed = xController.calculate(tagPose.getX());
+        double strafeSpeed = xController.calculate(tagPose.getX());
 
         yController.setTargetPosition(targetFollowingPose.getY());
-        double strafeSpeed = yController.calculate(tagPose.getY());
+        double forwardSpeed = yController.calculate(tagPose.getY());
 
-        double turnSpeed = thetaController.calculate(targetFollowingPose.getTheta(), tagPose.getTheta());
+        double turnSpeed = thetaController.calculate(Math.toRadians(targetFollowingPose.getTheta()), Math.toRadians(tagPose.getTheta()));
 
         driveRobotCentric(
-                strafeSpeed,
-                forwardSpeed,
+                -strafeSpeed,
+                -forwardSpeed,
                 turnSpeed
         );
     }
@@ -149,7 +151,6 @@ public class Drive {
     public double getTurnTarget() {
         return theta;
     }
-
 
 
     public void driveWithMotorPowers(double frontLeftSpeed, double frontRightSpeed,

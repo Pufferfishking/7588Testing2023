@@ -2,9 +2,9 @@ package org.firstinspires.ftc.teamcode.commandBased.classes.poofypid;
 
 public class PoofyPIDCoefficients {
 
-    private final double kP;
-    private final double kI;
-    private final double kD;
+    public double kP;
+    public double kI;
+    public double kD;
 
     public PoofyPIDCoefficients(double kP, double kI, double kD) {
         this.kP = kP;

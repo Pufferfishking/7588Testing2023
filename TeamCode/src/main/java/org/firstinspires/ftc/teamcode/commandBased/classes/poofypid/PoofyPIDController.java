@@ -59,6 +59,18 @@ public class PoofyPIDController extends PoofyFeedForwardController{
         this.kD = kD;
     }
 
+    public double getP() {
+        return kP;
+    }
+
+    public double getI() {
+        return kI;
+    }
+
+    public double getD() {
+        return kD;
+    }
+
     public void setPID(double kP, double kI, double kD) {
         this.kP = kP;
         this.kI = kI;

@@ -50,7 +50,7 @@ public class Pose3d {
     }
 
     public Pose2d toPose2d() {
-        return new Pose2d(vector3d.toVector2d(), rotation3d.getAngle());
+        return new Pose2d(vector3d.toVector2d(), rotation3d.getZ());
     }
 
     public Vector3d getVector() {

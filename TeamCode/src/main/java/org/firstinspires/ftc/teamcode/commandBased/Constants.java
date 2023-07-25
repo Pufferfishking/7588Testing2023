@@ -63,10 +63,10 @@ public class Constants {
     public static double TRACK_WIDTH = 13;
     public static double DRIVE_KV = 0;
 
-    public static PoofyPIDCoefficients X_COEFFS = new PoofyPIDCoefficients(1, 0, 0);
-    public static PoofyPIDCoefficients Y_COEFFS = new PoofyPIDCoefficients(1, 0, 0);
+    public static PoofyPIDCoefficients X_COEFFS = new PoofyPIDCoefficients(0.05, 0, 0);
+    public static PoofyPIDCoefficients Y_COEFFS = new PoofyPIDCoefficients(0.05, 0, 0);
 
-    public static PIDCoefficientsEx TURN_COEFFS = new PIDCoefficientsEx(0, 0, 0, 1, 0, 0);
+    public static PIDCoefficientsEx TURN_COEFFS = new PIDCoefficientsEx(0.25, 0, 0, 1, 0, 0);
 
     public static Vector2d TARGET = new Vector2d(-10, 0);
     public static Pose2d STARTING_POINT = new Pose2d(0, 0, Math.toRadians(0));

@@ -65,7 +65,7 @@ public class AprilTagLocalizer {
                         cameraIntrinsics.getCx(),
                         cameraIntrinsics.getCy()
                 )
-                .setTagLibrary(AprilTagCustomDatabase.getTestingLibrary())
+                .setTagLibrary(AprilTagCustomDatabase.getSmallLibrary())
                 .build();
 
         visionPortal = new VisionPortal.Builder()
