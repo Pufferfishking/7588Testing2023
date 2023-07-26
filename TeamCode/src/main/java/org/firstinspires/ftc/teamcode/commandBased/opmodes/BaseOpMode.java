@@ -10,6 +10,7 @@ import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
+import com.qualcomm.robotcore.util.RollingAverage;
 
 import org.firstinspires.ftc.teamcode.commandBased.Constants;
 import org.firstinspires.ftc.teamcode.commandBased.classes.misc.CommandSchedulerEx;
@@ -37,9 +38,10 @@ public class BaseOpMode extends CommandOpMode {
 
     protected RevBlinkinLedDriver blinkin;
 
-    private VoltageSensor batteryVoltageSensor;
+    protected VoltageSensor batteryVoltageSensor;
 
-    private double loopTime;
+    protected double loopTime;
+    protected RollingAverage loopAvg;
 
     @Override
     public void initialize() {
@@ -61,6 +63,8 @@ public class BaseOpMode extends CommandOpMode {
         blinkin.setPattern(RevBlinkinLedDriver.BlinkinPattern.AQUA);
 
         batteryVoltageSensor = hardwareMap.voltageSensor.iterator().next();
+
+        loopAvg = new RollingAverage(50);
     }
 
     @Override
@@ -69,6 +73,8 @@ public class BaseOpMode extends CommandOpMode {
         CommandSchedulerEx.getInstance().run();
 
         tad("loop time", System.currentTimeMillis() - loopTime);
+        tad("loop avg", loopAvg.getAverage());
+        loopAvg.addNumber((int) (System.currentTimeMillis() - loopTime));
         loopTime = System.currentTimeMillis();
 
         if (Constants.DEBUG_ELE) {

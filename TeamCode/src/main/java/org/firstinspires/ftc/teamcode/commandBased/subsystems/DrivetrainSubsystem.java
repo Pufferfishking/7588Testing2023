@@ -4,7 +4,6 @@ import com.ThermalEquilibrium.homeostasis.Controllers.Feedback.AngleController;
 import com.ThermalEquilibrium.homeostasis.Parameters.PIDCoefficientsEx;
 import com.acmerobotics.dashboard.config.Config;
 
-import org.firstinspires.ftc.teamcode.commandBased.classes.apriltag.AprilTagLocalizer;
 import org.firstinspires.ftc.teamcode.commandBased.classes.TwoWheelLocalizer;
 import org.firstinspires.ftc.teamcode.commandBased.classes.apriltag.AprilTagLocalizerDouble;
 import org.firstinspires.ftc.teamcode.commandBased.classes.util.geometry.Pose2d;
@@ -146,6 +145,25 @@ public class DrivetrainSubsystem extends SubsystemBase {
     public AprilTagDetection getTargetTag() {
         return atLocalizer.getTargetTag();
     }
+
+
+    public Pose3d getTagPose2() {
+        return atLocalizer.getTagPose2();
+    }
+
+    public Transform3d getCamToTarget2() {
+        return atLocalizer.getCamToTarget2();
+    }
+
+    public Pose3d getCameraPose2() {
+        return atLocalizer.getCamPose2();
+    }
+
+    public AprilTagDetection getTargetTag2() {
+        return atLocalizer.getTargetTag2();
+    }
+
+
 
     public VisionPortal.CameraState getCameraState() {
         return atLocalizer.getCameraState();

@@ -3,11 +3,8 @@ package org.firstinspires.ftc.teamcode.commandBased.opmodes.teleop;
 import android.annotation.SuppressLint;
 
 import com.acmerobotics.dashboard.config.Config;
-import com.arcrobotics.ftclib.command.InstantCommand;
-import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.commandBased.classes.util.KalmanFilter;
 import org.firstinspires.ftc.teamcode.commandBased.classes.util.geometry.Pose2d;
 import org.firstinspires.ftc.teamcode.commandBased.classes.util.geometry.Pose3d;
 import org.firstinspires.ftc.teamcode.commandBased.classes.util.geometry.Transform3d;
@@ -35,7 +32,7 @@ public class Vision extends TeleOpMode {
 
         followTag = new FollowTag(drivetrainSS, followPose);
 
-        //followTag.schedule();
+        followTag.schedule();
         printCameraState();
     }
 
@@ -45,23 +42,34 @@ public class Vision extends TeleOpMode {
         super.run();
 
         AprilTagDetection tag = drivetrainSS.getTargetTag();
+        AprilTagDetection tag2 = drivetrainSS.getTargetTag2();
 
         Pose3d tagPose = drivetrainSS.getTagPose();
+        Pose3d tagPose2 = drivetrainSS.getTagPose2();
+
         Transform3d camToTarget = drivetrainSS.getCamToTarget();
+        Transform3d camToTarget2 = drivetrainSS.getCamToTarget2();
+
         Pose3d camPose = drivetrainSS.getCameraPose();
+        Pose3d camPose2 = drivetrainSS.getCameraPose2();
 
-        if (camPose != null && tag != null) {
+        if (camPose != null && tag != null && tag2 != null && camPose2 != null) {
 
-            Pose2d follow = new Pose2d(tag.ftcPose.x, tag.ftcPose.y, tag.ftcPose.yaw).plus(followPose);
-
-            tal("Raw Tag Readings");
+            tal("Raw Tag Readings 1");
             tal(String.format("XYZ %6.1f %6.1f %7.1f  (inch)", tag.ftcPose.x, tag.ftcPose.y, tag.ftcPose.z));
-//            tal(String.format("XY T %6.1f %6.1f %7.1f  ", follow.x, follow.y, follow.theta));
-            tad("t", tagPose.toPose2d().getTheta());
+            tal(String.format("RPY %6.1f %6.1f %7.1f  (deg)", tag.ftcPose.roll, tag.ftcPose.pitch, tag.ftcPose.yaw));
             tal();
-//            tal(String.format("RPY %6.1f %6.1f %6.1f  (deg)", tag.ftcPose.roll, tag.ftcPose.pitch, tag.ftcPose.yaw));
-            tal("Camera Pose");
+            tal("Camera Pose 1");
             tal(camPose.toString());
+            tal();
+            tal("======================");
+            tal();
+            tal("Raw Tag Readings 2");
+            tal(String.format("XYZ %6.1f %6.1f %7.1f  (inch)", tag2.ftcPose.x, tag2.ftcPose.y, tag2.ftcPose.z));
+            tal(String.format("RPY %6.1f %6.1f %7.1f  (deg)", tag2.ftcPose.roll, tag2.ftcPose.pitch, tag2.ftcPose.yaw));
+            tal();
+            tal("Camera Pose 2");
+            tal(camPose2.toString());
             tal();
 
 

@@ -14,6 +14,7 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainControl;
+import org.firstinspires.ftc.teamcode.commandBased.Constants;
 import org.firstinspires.ftc.teamcode.commandBased.classes.util.KalmanFilter;
 import org.firstinspires.ftc.teamcode.commandBased.classes.util.geometry.Pose3d;
 import org.firstinspires.ftc.teamcode.commandBased.classes.util.geometry.Rotation3d;
@@ -38,6 +39,7 @@ public class AprilTagLocalizerDouble {
 
     private final DrivetrainSubsystem drive;
     private final Pose3d cameraPose;
+    private final Pose3d cameraPose2;
 
     private final KalmanFilter rollFilter;
     private final KalmanFilter pitchFilter;
@@ -50,16 +52,22 @@ public class AprilTagLocalizerDouble {
 
     int[] portalsList;
 
-
-
     private AprilTagDetection targetTag;
+    private AprilTagDetection targetTag2;
     private List<AprilTagDetection> tags;
+    private List<AprilTagDetection> tags2;
 
     private Pose3d tagPose;
     private Transform3d camToTarget;
     private Pose3d camPose;
     private Transform3d robotToCam;
     private Pose3d robotPose;
+
+    private Pose3d tagPose2;
+    private Transform3d camToTarget2;
+    private Pose3d camPose2;
+    private Transform3d robotToCam2;
+    private Pose3d robotPose2;
 
     private WebcamName camera = null;
     private ExposureControl exposure;
@@ -76,6 +84,7 @@ public class AprilTagLocalizerDouble {
     ) {
         this.drive = drive;
         this.cameraPose = cameraPose;
+        this.cameraPose2 = Constants.CAMERA_POSE_2;
 
         camera = hwMap.get(WebcamName.class, cameraName);
 
@@ -150,6 +159,9 @@ public class AprilTagLocalizerDouble {
         yawFilter = new KalmanFilter(q, r, n);
 
         tags = tagProcessor.getDetections();
+
+        visionPortal.stopLiveView();
+        visionPortal2.stopLiveView();
     }
 
     public void update() {
@@ -159,8 +171,10 @@ public class AprilTagLocalizerDouble {
         }
 
         tags = tagProcessor.getDetections();
+        tags2 = tagProcessor2.getDetections();
 
         targetTag = findTargetTag(tags);
+        targetTag2 = findTargetTag(tags2);
 
         if (targetTag != null) {
             tagPose = calculateTagPose(targetTag);
@@ -168,6 +182,14 @@ public class AprilTagLocalizerDouble {
             camPose = calculateCamPose(targetTag);
             robotToCam = calculateRobotToCamera(cameraPose);
             robotPose = calculateRobotPose(camPose, robotToCam);
+        }
+
+        if (targetTag2 != null) {
+            tagPose2 = calculateTagPose(targetTag2);
+            camToTarget2 = calculateCamToTarget(targetTag2);
+            camPose2 = calculateCamPose(targetTag2);
+            robotToCam2 = calculateRobotToCamera(cameraPose);
+            robotPose2 = calculateRobotPose(camPose2, robotToCam2);
         }
     }
 
@@ -257,6 +279,30 @@ public class AprilTagLocalizerDouble {
 
     public Pose3d getRobotPose() {
         return robotPose;
+    }
+
+    public AprilTagDetection getTargetTag2() {
+        return targetTag2;
+    }
+
+    public Pose3d getTagPose2() {
+        return tagPose2;
+    }
+
+    public Transform3d getCamToTarget2() {
+        return camToTarget2;
+    }
+
+    public Pose3d getCamPose2() {
+        return camPose2;
+    }
+
+    public Transform3d getRobotToCam2() {
+        return robotToCam2;
+    }
+
+    public Pose3d getRobotPose2() {
+        return robotPose2;
     }
 
     public VisionPortal.CameraState getCameraState() {
