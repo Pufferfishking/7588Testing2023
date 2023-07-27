@@ -32,7 +32,7 @@ public class Vision extends TeleOpMode {
 
         followTag = new FollowTag(drivetrainSS, followPose);
 
-        followTag.schedule();
+        //followTag.schedule();
         printCameraState();
     }
 
@@ -53,7 +53,7 @@ public class Vision extends TeleOpMode {
         Pose3d camPose = drivetrainSS.getCameraPose();
         Pose3d camPose2 = drivetrainSS.getCameraPose2();
 
-        if (camPose != null && tag != null && tag2 != null && camPose2 != null) {
+        if (camPose != null && tag != null) {
 
             tal("Raw Tag Readings 1");
             tal(String.format("XYZ %6.1f %6.1f %7.1f  (inch)", tag.ftcPose.x, tag.ftcPose.y, tag.ftcPose.z));
@@ -63,7 +63,9 @@ public class Vision extends TeleOpMode {
             tal(camPose.toString());
             tal();
             tal("======================");
-            tal();
+
+
+        } else if (tag2 != null && camPose2 != null) {
             tal("Raw Tag Readings 2");
             tal(String.format("XYZ %6.1f %6.1f %7.1f  (inch)", tag2.ftcPose.x, tag2.ftcPose.y, tag2.ftcPose.z));
             tal(String.format("RPY %6.1f %6.1f %7.1f  (deg)", tag2.ftcPose.roll, tag2.ftcPose.pitch, tag2.ftcPose.yaw));
@@ -71,8 +73,6 @@ public class Vision extends TeleOpMode {
             tal("Camera Pose 2");
             tal(camPose2.toString());
             tal();
-
-
         } else {
             tal("null tag");
         }

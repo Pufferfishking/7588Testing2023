@@ -27,7 +27,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.robotcontroller.external.samples;
+package org.firstinspires.ftc.teamcode.commandBased.opmodes;
 
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
@@ -82,7 +82,6 @@ import java.util.List;
 
      */
 @TeleOp (name = "Motor Bulk Reads", group = "Tests")
-@Disabled
 public class ConceptMotorBulkRead extends LinearOpMode {
 
     final int       TEST_CYCLES    = 500;   // Number of control cycles to run to determine cycle times.
@@ -102,10 +101,10 @@ public class ConceptMotorBulkRead extends LinearOpMode {
         int cycles;
 
         // Important Step 1:  Make sure you use DcMotorEx when you instantiate your motors.
-        m1 = hardwareMap.get(DcMotorEx.class, "m1");  // Configure the robot to use these 4 motor names,
-        m2 = hardwareMap.get(DcMotorEx.class, "m2");  // or change these strings to match your existing Robot Configuration.
-        m3 = hardwareMap.get(DcMotorEx.class, "m3");
-        m4 = hardwareMap.get(DcMotorEx.class, "m4");
+        m1 = hardwareMap.get(DcMotorEx.class, "fL");  // Configure the robot to use these 4 motor names,
+        m2 = hardwareMap.get(DcMotorEx.class, "fR");  // or change these strings to match your existing Robot Configuration.
+        m3 = hardwareMap.get(DcMotorEx.class, "rL");
+        m4 = hardwareMap.get(DcMotorEx.class, "rR");
 
         // Important Step 2: Get access to a list of Expansion Hub Modules to enable changing caching methods.
         List<LynxModule> allHubs = hardwareMap.getAll(LynxModule.class);

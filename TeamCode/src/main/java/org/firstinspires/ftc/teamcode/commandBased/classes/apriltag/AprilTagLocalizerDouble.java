@@ -160,8 +160,8 @@ public class AprilTagLocalizerDouble {
 
         tags = tagProcessor.getDetections();
 
-        visionPortal.stopLiveView();
-        visionPortal2.stopLiveView();
+//        visionPortal.stopLiveView();
+//        visionPortal2.stopLiveView();
     }
 
     public void update() {

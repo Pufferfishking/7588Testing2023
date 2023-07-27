@@ -27,6 +27,7 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.vision.VisionPortal;
 
+@Disabled
 @TeleOp(name="Webcam Controls - Exp & Gain v06", group ="Webcam Controls")
 
 public class W_WebcamControls_Exp_Gain_v06 extends LinearOpMode {

@@ -9,10 +9,10 @@ import org.firstinspires.ftc.teamcode.commandBased.classes.apriltag.AprilTagLoca
 import org.firstinspires.ftc.teamcode.commandBased.classes.util.geometry.Pose2d;
 
 import com.arcrobotics.ftclib.command.SubsystemBase;
-import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
@@ -25,7 +25,6 @@ import org.firstinspires.ftc.teamcode.commandBased.classes.pid.PIDOpenClosed;
 import org.firstinspires.ftc.teamcode.commandBased.classes.util.geometry.Pose3d;
 import org.firstinspires.ftc.teamcode.commandBased.classes.util.geometry.Transform3d;
 import org.firstinspires.ftc.teamcode.commandBased.classes.util.geometry.Vector2d;
-import org.firstinspires.ftc.teamcode.commandBased.Constants;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
@@ -34,11 +33,10 @@ import static org.firstinspires.ftc.teamcode.commandBased.Constants.*;
 @Config
 public class DrivetrainSubsystem extends SubsystemBase {
 
-    //DRIVE MOTORS
-    private DcMotor m_fL;
-    private DcMotor m_fR;
-    private DcMotor m_rL;
-    private DcMotor m_rR;
+    private final DcMotorEx fL;
+    private final DcMotorEx fR;
+    private final DcMotorEx rL;
+    private final DcMotorEx rR;
 
     //DRIVE VARIABLES
     private DriveMode.Mode mode;
@@ -48,53 +46,46 @@ public class DrivetrainSubsystem extends SubsystemBase {
     private double forwardMultiplier = 1;
     private double heading;
 
-    //TURNING VARIABLES
-    private PIDCoefficientsEx turningCoeffs;
-    private DeadzonePID turningPID;
-    private AngleController turningController;
-    private PIDOpenClosed turnPID;
-    private double turningPIDDeadzone = 0.25;
+    private final PIDOpenClosed turnPID;
 
-    private TwoWheelLocalizer dwLocalizer;
-    private AprilTagLocalizerDouble atLocalizer;
-    private com.acmerobotics.roadrunner.geometry.Pose2d pose = new com.acmerobotics.roadrunner.geometry.Pose2d(0, 0, 0);
+    private final TwoWheelLocalizer dwLocalizer;
+    private final AprilTagLocalizerDouble atLocalizer;
+    private final com.acmerobotics.roadrunner.geometry.Pose2d pose = new com.acmerobotics.roadrunner.geometry.Pose2d(0, 0, 0);
 
     private final Drive drive;
     private LynxModule chub;
-    private IMU imu;
+    private final IMU imu;
 
     public DrivetrainSubsystem(final HardwareMap hwMap) {
 
         //motor setup
-        Motor fL = new Motor(hwMap, "fL", Constants.DRIVE_MOTOR);
-        Motor fR = new Motor(hwMap, "fR", Constants.DRIVE_MOTOR);
-        Motor rL = new Motor(hwMap, "rL", Constants.DRIVE_MOTOR);
-        Motor rR = new Motor(hwMap, "rR", Constants.DRIVE_MOTOR);
+        fL = hwMap.get(DcMotorEx.class, "fL");
+        fR = hwMap.get(DcMotorEx.class, "fR");
+        rL = hwMap.get(DcMotorEx.class, "rL");
+        rR = hwMap.get(DcMotorEx.class, "rR");
 
-        m_fL = fL.motor;
-        m_fR = fR.motor;
-        m_rL = rL.motor;
-        m_rR = rR.motor;
+        fL.setDirection(DcMotorSimple.Direction.REVERSE);
+        rL.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        m_fL.setDirection(DcMotorSimple.Direction.REVERSE);
-        m_rL.setDirection(DcMotorSimple.Direction.REVERSE);
+        fL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        fR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        m_fL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        m_fR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        m_rL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        m_rR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-        m_fL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        m_fR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        m_rL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        m_rR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        fL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        fR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         drive = new Drive(fL, fR, rL, rR, TURN_COEFFS, X_COEFFS, Y_COEFFS);
 
+
         //turning pid
-        turningCoeffs = new PIDCoefficientsEx(1.5, 0.4, 0.4, 0.25, 2, 0.5);
-        turningPID = new DeadzonePID(turningCoeffs, Math.toRadians(turningPIDDeadzone));
-        turningController = new AngleController(turningPID);
+        //TURNING VARIABLES
+        PIDCoefficientsEx turningCoeffs = new PIDCoefficientsEx(1.5, 0.4, 0.4, 0.25, 2, 0.5);
+        double turningPIDDeadzone = 0.25;
+        DeadzonePID turningPID = new DeadzonePID(turningCoeffs, Math.toRadians(turningPIDDeadzone));
+        AngleController turningController = new AngleController(turningPID);
         turnPID = new PIDOpenClosed(turningController, 0.2);
 
         chub = hwMap.getAll(LynxModule.class).get(0); //better ways to do this
@@ -263,5 +254,9 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     public Pose2d convertRRPose(com.acmerobotics.roadrunner.geometry.Pose2d pose) {
         return new Pose2d(pose.getX(), pose.getY(), pose.getHeading());
+    }
+
+    public double[] getMotorVelocities() {
+        return new double[]{fL.getVelocity(), fR.getVelocity(), rL.getVelocity(), rR.getVelocity()};
     }
 }

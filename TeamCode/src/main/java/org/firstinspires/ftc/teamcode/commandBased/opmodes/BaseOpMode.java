@@ -8,7 +8,9 @@ import com.arcrobotics.ftclib.command.button.GamepadButton;
 import com.arcrobotics.ftclib.command.button.Trigger;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
+import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.RollingAverage;
 
@@ -22,6 +24,9 @@ import org.firstinspires.ftc.teamcode.commandBased.subsystems.ElevatorSubsystem;
 import org.firstinspires.ftc.teamcode.commandBased.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.commandBased.subsystems.RotatorSubsystem;
 
+import java.util.List;
+
+@TeleOp
 public class BaseOpMode extends CommandOpMode {
 
     protected ElevatorSubsystem elevatorSS;
@@ -37,8 +42,9 @@ public class BaseOpMode extends CommandOpMode {
     protected MultipleTelemetry tele;
 
     protected RevBlinkinLedDriver blinkin;
-
     protected VoltageSensor batteryVoltageSensor;
+
+    protected List<LynxModule> hubs;
 
     protected double loopTime;
     protected RollingAverage loopAvg;
@@ -46,6 +52,11 @@ public class BaseOpMode extends CommandOpMode {
     @Override
     public void initialize() {
         CommandScheduler.getInstance().reset();
+
+        hubs = hardwareMap.getAll(LynxModule.class);
+        for (LynxModule module : hubs) {
+            module.setBulkCachingMode(LynxModule.BulkCachingMode.MANUAL);
+        }
 
         elevatorSS = new ElevatorSubsystem(hardwareMap);
         armSS = new ArmSubsystem(hardwareMap);
@@ -71,6 +82,10 @@ public class BaseOpMode extends CommandOpMode {
     public void run() {
         CommandScheduler.getInstance().run();
         CommandSchedulerEx.getInstance().run();
+
+        for (LynxModule module : hubs) {
+            module.clearBulkCache();
+        }
 
         tad("loop time", System.currentTimeMillis() - loopTime);
         tad("loop avg", loopAvg.getAverage());

@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode.commandBased.classes.misc;
 
 import com.ThermalEquilibrium.homeostasis.Controllers.Feedback.AngleController;
 import com.ThermalEquilibrium.homeostasis.Parameters.PIDCoefficientsEx;
-import com.arcrobotics.ftclib.hardware.motors.Motor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 import org.firstinspires.ftc.teamcode.commandBased.classes.pid.DeadzonePID;
 import org.firstinspires.ftc.teamcode.commandBased.classes.poofypid.PoofyPIDCoefficients;
@@ -12,7 +12,7 @@ import org.firstinspires.ftc.teamcode.commandBased.classes.util.geometry.Vector2
 
 public class Drive {
 
-    private final Motor frontLeft, frontRight, backLeft, backRight;
+    private final DcMotorEx frontLeft, frontRight, backLeft, backRight;
     private double maxOutput = 1;
 
     private final PoofyPIDController xController;
@@ -27,7 +27,7 @@ public class Drive {
 
     private double[] speeds = new double[3];
 
-    public Drive(Motor frontLeft, Motor frontRight, Motor backLeft, Motor backRight) {
+    public Drive(DcMotorEx frontLeft, DcMotorEx frontRight, DcMotorEx backLeft, DcMotorEx backRight) {
         this.frontLeft = frontLeft;
         this.frontRight = frontRight;
         this.backLeft = backLeft;
@@ -38,10 +38,10 @@ public class Drive {
         thetaController = new AngleController(headingDeadzone);
     }
 
-    public Drive(Motor frontLeft,
-                 Motor frontRight,
-                 Motor backLeft,
-                 Motor backRight,
+    public Drive(DcMotorEx frontLeft,
+                 DcMotorEx frontRight,
+                 DcMotorEx backLeft,
+                 DcMotorEx backRight,
                  PIDCoefficientsEx turningCoeffs,
                  PoofyPIDCoefficients xCoeffs,
                  PoofyPIDCoefficients yCoeffs
@@ -152,17 +152,16 @@ public class Drive {
         return theta;
     }
 
-
     public void driveWithMotorPowers(double frontLeftSpeed, double frontRightSpeed,
                                      double backLeftSpeed, double backRightSpeed) {
         this.frontLeft
-                .set(frontLeftSpeed * maxOutput);
+                .setPower(frontLeftSpeed * maxOutput);
         this.frontRight
-                .set(frontRightSpeed * maxOutput);
+                .setPower(frontRightSpeed * maxOutput);
         this.backLeft
-                .set(backLeftSpeed * maxOutput);
+                .setPower(backLeftSpeed * maxOutput);
         this.backRight
-                .set(backRightSpeed * maxOutput);
+                .setPower(backRightSpeed * maxOutput);
     }
 
 }

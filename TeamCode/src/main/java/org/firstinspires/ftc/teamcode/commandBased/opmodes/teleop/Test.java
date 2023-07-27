@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.commandBased.opmodes.teleop;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.commandBased.Constants;
@@ -27,6 +28,7 @@ import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Trigger.*;
 
 import static org.firstinspires.ftc.teamcode.commandBased.Constants.*;
 
+@Disabled
 @TeleOp
 public class Test extends TeleOpMode {
 

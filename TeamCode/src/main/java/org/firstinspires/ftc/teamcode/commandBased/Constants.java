@@ -164,7 +164,8 @@ public class Constants {
 
     //VISION
     public static CameraIntrinsics C920_OLD_INTRINSICS = new CameraIntrinsics(810.073, 810.073, 214.359, 243.298);
-    public static CameraIntrinsics C920_INTRINSICS = new CameraIntrinsics(622.001, 622.001, 319.803, 241.251);
+    public static CameraIntrinsics C920_LESS_OLD_INTRINSICS = new CameraIntrinsics(622.001, 622.001, 319.803, 241.251);
+    public static CameraIntrinsics C920_INTRINSICS = new CameraIntrinsics(504.041, 504.041, 307.462, 234.687);
     public static double FX1 = 810.073;
     public static double FY1 = 810.073;
     public static double CX1 = 214.359;

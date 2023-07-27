@@ -4,6 +4,7 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.canvas.Canvas;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.arcrobotics.ftclib.command.CommandScheduler;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.commandBased.Constants;
@@ -32,6 +33,7 @@ import ftc.rogue.blacksmith.BlackOp;
 import ftc.rogue.blacksmith.Scheduler;
 import ftc.rogue.blacksmith.listeners.ReforgedGamepad;
 
+@Disabled
 @TeleOp(name="Command Based", group="Linear Opmode")
 public class RobotExperiment extends BlackOp {
 

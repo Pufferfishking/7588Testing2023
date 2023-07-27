@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.commandBased.opmodes.tuning;
 
 import com.arcrobotics.ftclib.command.CommandScheduler;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.commandBased.Constants;
@@ -16,6 +17,7 @@ import ftc.rogue.blacksmith.BlackOp;
 import ftc.rogue.blacksmith.Scheduler;
 import ftc.rogue.blacksmith.listeners.ReforgedGamepad;
 
+@Disabled
 @TeleOp(name = "Rotator Tuning", group = "Linear Opmode")
 public class RotatorTuningProgram extends BlackOp {
 
