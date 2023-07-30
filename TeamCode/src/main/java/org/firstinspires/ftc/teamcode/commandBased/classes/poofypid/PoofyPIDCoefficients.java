@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.commandBased.classes.poofypid;
 
+import com.acmerobotics.roadrunner.control.PIDCoefficients;
+import com.acmerobotics.roadrunner.control.PIDFController;
+
 public class PoofyPIDCoefficients {
 
     public double kP;
@@ -23,4 +26,7 @@ public class PoofyPIDCoefficients {
     public double getkD() {
         return kD;
     }
+
+
+
 }

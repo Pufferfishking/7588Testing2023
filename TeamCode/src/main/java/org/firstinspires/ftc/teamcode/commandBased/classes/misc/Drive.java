@@ -25,7 +25,7 @@ public class Drive {
 
     private Pose2d currentPose;
 
-    private double[] speeds = new double[3];
+    private double[] pastSpeeds;
 
     public Drive(DcMotorEx frontLeft, DcMotorEx frontRight, DcMotorEx backLeft, DcMotorEx backRight) {
         this.frontLeft = frontLeft;
@@ -36,6 +36,7 @@ public class Drive {
         yController = new PoofyPIDController(0, 0, 0);
         headingDeadzone = new DeadzonePID(new PIDCoefficientsEx(0, 0, 0, 1, 1, 0), 2);
         thetaController = new AngleController(headingDeadzone);
+        pastSpeeds = new double[]{0, 0, 0, 0};
     }
 
     public Drive(DcMotorEx frontLeft,
@@ -55,6 +56,7 @@ public class Drive {
         headingDeadzone = new DeadzonePID(turningCoeffs, Math.toRadians(2));
         thetaController = new AngleController(headingDeadzone);
         currentPose = new Pose2d(0, 0, 0);
+        pastSpeeds = new double[]{0, 0, 0, 0};
     }
 
     public void setMaxSpeed(double maxOutput) {
@@ -154,14 +156,18 @@ public class Drive {
 
     public void driveWithMotorPowers(double frontLeftSpeed, double frontRightSpeed,
                                      double backLeftSpeed, double backRightSpeed) {
-        this.frontLeft
-                .setPower(frontLeftSpeed * maxOutput);
-        this.frontRight
-                .setPower(frontRightSpeed * maxOutput);
-        this.backLeft
-                .setPower(backLeftSpeed * maxOutput);
-        this.backRight
-                .setPower(backRightSpeed * maxOutput);
+        if (pastSpeeds[0] == frontLeftSpeed && pastSpeeds[1] == frontRightSpeed &&
+            pastSpeeds[2] == backLeftSpeed && pastSpeeds[3] == backRightSpeed) {
+            this.frontLeft
+                    .setPower(frontLeftSpeed * maxOutput);
+            this.frontRight
+                    .setPower(frontRightSpeed * maxOutput);
+            this.backLeft
+                    .setPower(backLeftSpeed * maxOutput);
+            this.backRight
+                    .setPower(backRightSpeed * maxOutput);
+        }
+        pastSpeeds = new double[]{frontLeftSpeed, frontRightSpeed, backLeftSpeed, backRightSpeed};
     }
 
 }

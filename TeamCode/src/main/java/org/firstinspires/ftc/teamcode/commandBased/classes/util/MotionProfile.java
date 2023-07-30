@@ -2,8 +2,8 @@ package org.firstinspires.ftc.teamcode.commandBased.classes.util;
 
 public class MotionProfile {
 
-    private final double initialPosition;
-    private final double finalPosition;
+    private final double initialPositionX;
+    private final double finalPositionX;
     private double accelPhase;
     private double cruisePhase;
     private final double totalTime;
@@ -17,17 +17,17 @@ public class MotionProfile {
     private final Constraints constraints;
 
 
-    public MotionProfile(double initialPosition, double finalPosition, Constraints constraints) {
-        if (finalPosition < initialPosition) {
+    public MotionProfile(State initialPosition, State finalPosition, Constraints constraints) {
+        if (finalPosition.x < initialPosition.x) {
             flipped = true;
-            this.originalPos = initialPosition;
-            double temp = initialPosition;
+            this.originalPos = initialPosition.x;
+            double temp = initialPosition.x;
             initialPosition = finalPosition;
-            finalPosition = temp;
+            finalPosition.x = temp;
         }
-        this.initialPosition = initialPosition;
-        this.finalPosition = finalPosition;
-        double distance = finalPosition - initialPosition;
+        this.initialPositionX = initialPosition.x;
+        this.finalPositionX = finalPosition.x;
+        double distance = finalPosition.x - initialPosition.x;
         this.constraints = constraints;
 
         accelPhase = constraints.velo / constraints.accel;
@@ -89,13 +89,13 @@ public class MotionProfile {
         } else {
             acceleration = 0;
             velocity = 0;
-            position = finalPosition;
+            position = finalPositionX;
         }
 
         if (flipped) {
             state.x = originalPos - position;
         } else {
-            state.x = initialPosition + position;
+            state.x = initialPositionX + position;
         }
         state.v = velocity;
         state.a = acceleration;
@@ -130,6 +130,11 @@ public class MotionProfile {
         public double a = 0;
 
         public State() {
+        }
+
+        public State(double x, double v) {
+            this.x = x;
+            this.v = v;
         }
 
         public State(double x, double v, double a) {

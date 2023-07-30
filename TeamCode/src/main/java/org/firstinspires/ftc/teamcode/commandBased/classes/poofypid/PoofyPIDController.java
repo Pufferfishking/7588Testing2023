@@ -78,7 +78,7 @@ public class PoofyPIDController extends PoofyFeedForwardController{
     }
 
 
-    private double getDT() {
+    public double getDT() {
         if (!hasRun) {
             hasRun = true;
             timer.reset();

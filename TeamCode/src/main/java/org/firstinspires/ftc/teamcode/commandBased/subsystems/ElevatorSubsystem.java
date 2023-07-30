@@ -5,30 +5,25 @@ import com.acmerobotics.roadrunner.profile.MotionProfile;
 import com.acmerobotics.roadrunner.profile.MotionProfileGenerator;
 import com.acmerobotics.roadrunner.profile.MotionState;
 import com.arcrobotics.ftclib.command.SubsystemBase;
-import com.arcrobotics.ftclib.hardware.motors.Motor;
-import com.arcrobotics.ftclib.hardware.motors.MotorGroup;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.Const;
 import org.firstinspires.ftc.teamcode.commandBased.Constants;
 import org.firstinspires.ftc.teamcode.commandBased.opmodes.Positions;
 
 
 public class ElevatorSubsystem extends SubsystemBase {
 
-    private final Motor eleL;
-    private final Motor eleR;
-    private final DcMotor m_eleL;
-    private final DcMotor m_eleR;
-    private final MotorGroup ele;
+    private final DcMotorEx eleL;
+    private final DcMotorEx eleR;
 
     //ELEVATOR VARIABLES
     private double elePos;
     private double eleTarget;
-    private double eleEncOffset;
+    private final double eleEncOffset;
 
     private PIDFController controller;
     private MotionProfile profile;
@@ -36,28 +31,19 @@ public class ElevatorSubsystem extends SubsystemBase {
     private MotionState state;
     private double correction;
 
-    public ElevatorSubsystem(final HardwareMap hwmap){
+    public ElevatorSubsystem(final HardwareMap hwMap){
 
         //motor setup
-        eleL = new Motor(hwmap, "eleL", Constants.ELE_MOTOR);
-        eleR = new Motor(hwmap, "eleR", Constants.ELE_MOTOR);
+        eleL = hwMap.get(DcMotorEx.class, "eleL");
+        eleR = hwMap.get(DcMotorEx.class, "eleR");
 
-        m_eleL = eleL.motor;
-        m_eleR = eleR.motor;
-
-        m_eleL.setDirection(DcMotorSimple.Direction.REVERSE);
-
-        m_eleL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        m_eleR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        m_eleL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        m_eleR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-        m_eleL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        m_eleR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        ele = new MotorGroup(eleL, eleR);
-        ele.setRunMode(Motor.RunMode.RawPower);
+        eleL.setDirection(DcMotorSimple.Direction.REVERSE);
+        eleL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        eleR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        eleL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        eleR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        eleL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        eleR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         eleEncOffset = Positions.elePosition;
 
@@ -80,7 +66,9 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        elePos = getOffsetPos((m_eleL.getCurrentPosition() + m_eleR.getCurrentPosition()) / 2.0);
+        //read();
+
+        elePos = getOffsetPos(elePos);
 
         //motion profiling
         state = profile.get(timer.seconds());
@@ -90,7 +78,31 @@ public class ElevatorSubsystem extends SubsystemBase {
         controller.setTargetAcceleration(state.getA());
 
         correction = controller.update(elePos);
-        ele.set(correction + Constants.ELE_KG);
+
+        //write();
+    }
+
+    public void read() {
+        try {
+            elePos = ((eleL.getCurrentPosition() + eleR.getCurrentPosition()) / 2.0);
+        } catch (Exception e) {
+
+        }
+    }
+
+    public void write() {
+        try {
+            eleL.setPower(correction + Constants.ELE_KG);
+        } catch (Exception e) {
+
+        }
+
+        try {
+            eleR.setPower(correction + Constants.ELE_KG);
+        } catch (Exception e) {
+
+        }
+
     }
 
     private double getOffsetPos(double pos) {
